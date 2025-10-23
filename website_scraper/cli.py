@@ -5,6 +5,9 @@ import argparse
 import logging
 from pathlib import Path
 from typing import List
+
+from .services import DEFAULT_USER_AGENT, ScrapeParameters, perform_scrape
+from .utils import normalize_base_url
 from urllib.parse import urlparse
 
 from .duckduckgo import DuckDuckGoSearcher
@@ -34,6 +37,18 @@ def main(argv: List[str] | None = None) -> None:
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s: %(message)s")
 
+    params = ScrapeParameters(
+        url=args.url,
+        max_pages=args.max_pages,
+        max_search_results=args.max_search_results,
+        timeout=args.timeout,
+        pause=args.pause,
+        user_agent=args.user_agent,
+    )
+
+    outcome = perform_scrape(params)
+
+    if not outcome.pages:
     base_url = _normalize_base_url(args.url)
     domain = urlparse(base_url).netloc
 
@@ -60,6 +75,19 @@ def main(argv: List[str] | None = None) -> None:
     text_path = output_dir / "scraped_content.txt"
     pdf_path = output_dir / "scraped_content.pdf"
 
+    text_path.write_text(outcome.rendered_text, encoding="utf-8")
+    logging.info("Saved text export to %s", text_path)
+
+    pdf_path.write_bytes(outcome.pdf_bytes)
+    logging.info("Saved PDF export to %s using %s", pdf_path, outcome.pdf_strategy)
+
+    logging.info("Scraped %d pages.", len(outcome.pages))
+
+
+def _normalize_base_url(url: str) -> str:
+    """Backward compatible shim for earlier CLI scripts."""
+
+    return normalize_base_url(url)
     text_exporter = TextExporter()
     text_exporter.export(pages, text_path)
     logging.info("Saved text export to %s", text_path)

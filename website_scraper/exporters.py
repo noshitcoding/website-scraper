@@ -14,6 +14,27 @@ logger = logging.getLogger(__name__)
 class TextExporter:
     """Write the collected pages into a single UTF-8 encoded text file."""
 
+    def render(self, pages: Sequence[PageContent]) -> str:
+        """Return the textual representation used for exports.
+
+        The render step is split out so that the CLI and HTTP API can both
+        reuse the formatting logic without duplicating file system access.
+        """
+
+        lines: list[str] = []
+        for page in pages:
+            lines.append(f"# {page.title}\n")
+            lines.append(f"URL: {page.url}\n")
+            lines.append(f"Fetched via: {page.fetch_strategy}\n\n")
+            lines.append(page.text)
+            lines.append("\n\n" + "=" * 80 + "\n\n")
+        return "".join(lines)
+
+    def export(self, pages: Sequence[PageContent], destination: Path) -> None:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        rendered = self.render(pages)
+        with destination.open("w", encoding="utf-8") as handle:
+            handle.write(rendered)
     def export(self, pages: Sequence[PageContent], destination: Path) -> None:
         destination.parent.mkdir(parents=True, exist_ok=True)
         with destination.open("w", encoding="utf-8") as handle:
@@ -93,6 +114,17 @@ class PDFExporter:
                 text_object.textLine("")
         canvas_obj.drawText(text_object)
         canvas_obj.save()
+
+    def export_to_bytes(self, pages: Sequence[PageContent]) -> tuple[str, bytes]:
+        """Return the PDF bytes alongside the strategy that produced them."""
+
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as tmpdir:
+            destination = Path(tmpdir) / "scraped_content.pdf"
+            strategy = self.export(pages, destination)
+            data = destination.read_bytes()
+        return strategy, data
 
 
 def _wrap_text_for_pdf(text: str, width: int = 95) -> Iterable[str]:

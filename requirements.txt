@@ -4,3 +4,5 @@ httpx>=0.25.0
 duckduckgo_search>=4.1.1
 fpdf2>=2.7.0
 reportlab>=4.0.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.23.0

@@ -5,4 +5,6 @@ __all__ = [
     "fetchers",
     "scraper",
     "exporters",
+    "services",
+    "utils",
 ]
