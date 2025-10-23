@@ -1,0 +1,218 @@
+:root {
+  color-scheme: light dark;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.app__header {
+  text-align: center;
+}
+
+.app__header h1 {
+  margin-bottom: 0.25rem;
+  font-size: 2.4rem;
+}
+
+.app__header p {
+  margin: 0.25rem 0;
+  color: #94a3b8;
+}
+
+.app__meta {
+  font-size: 0.9rem;
+  color: #38bdf8;
+}
+
+.card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  padding: 1.75rem;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.35);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form__group span {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.form__group input,
+.form__group textarea {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.65);
+  color: #e2e8f0;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.form__group input:focus,
+.form__group textarea:focus {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+button,
+.button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  color: #0f172a;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button.secondary {
+  background: rgba(148, 163, 184, 0.25);
+  color: #e2e8f0;
+}
+
+button:disabled,
+.button--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+button:not(:disabled):hover,
+.button:not(.button--disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(56, 189, 248, 0.35);
+}
+
+.form__error {
+  color: #fca5a5;
+  margin: 0;
+}
+
+.result__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.result__summary p {
+  margin: 0;
+  background: rgba(30, 41, 59, 0.6);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  color: #cbd5f5;
+}
+
+.result__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.result__details {
+  margin-bottom: 1.25rem;
+}
+
+.result__details summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.result__details ul {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.result__details li {
+  background: rgba(30, 41, 59, 0.55);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.page-title {
+  font-weight: 600;
+}
+
+.page-strategy {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.result__details textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.75);
+  color: #e2e8f0;
+  font-family: 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+}
