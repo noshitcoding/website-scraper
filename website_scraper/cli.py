@@ -8,6 +8,15 @@ from typing import List
 
 from .services import DEFAULT_USER_AGENT, ScrapeParameters, perform_scrape
 from .utils import normalize_base_url
+from urllib.parse import urlparse
+
+from .duckduckgo import DuckDuckGoSearcher
+from .exporters import PDFExporter, TextExporter
+from .fetchers import HTTPFetcher
+from .scraper import SiteScraper
+
+DEFAULT_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " \
+    "(KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
 
 
 def parse_args(argv: List[str] | None = None) -> argparse.Namespace:
@@ -40,6 +49,23 @@ def main(argv: List[str] | None = None) -> None:
     outcome = perform_scrape(params)
 
     if not outcome.pages:
+    base_url = _normalize_base_url(args.url)
+    domain = urlparse(base_url).netloc
+
+    logging.info("Using DuckDuckGo to search for pages under %s", domain)
+    fetcher = HTTPFetcher(user_agent=args.user_agent, timeout=args.timeout, pause=args.pause)
+    searcher = DuckDuckGoSearcher(user_agent=args.user_agent, timeout=args.timeout)
+    search_results = searcher.search(domain, max_results=args.max_search_results)
+
+    seed_urls = [base_url]
+    for result in search_results:
+        if urlparse(result).netloc == domain and result not in seed_urls:
+            seed_urls.append(result)
+
+    scraper = SiteScraper(base_url=base_url, fetcher=fetcher, max_pages=args.max_pages)
+    pages = scraper.scrape(seed_urls)
+
+    if not pages:
         logging.warning("No pages were scraped. Please check the URL or increase the limits.")
         return
 
@@ -62,6 +88,24 @@ def _normalize_base_url(url: str) -> str:
     """Backward compatible shim for earlier CLI scripts."""
 
     return normalize_base_url(url)
+    text_exporter = TextExporter()
+    text_exporter.export(pages, text_path)
+    logging.info("Saved text export to %s", text_path)
+
+    pdf_exporter = PDFExporter()
+    strategy = pdf_exporter.export(pages, pdf_path)
+    logging.info("Saved PDF export to %s using %s", pdf_path, strategy)
+
+    logging.info("Scraped %d pages.", len(pages))
+
+
+def _normalize_base_url(url: str) -> str:
+    parsed = urlparse(url)
+    if not parsed.scheme:
+        parsed = parsed._replace(scheme="https")
+    if not parsed.netloc:
+        parsed = parsed._replace(netloc=parsed.path, path="")
+    return parsed.geturl()
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point

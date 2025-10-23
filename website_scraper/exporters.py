@@ -35,6 +35,15 @@ class TextExporter:
         rendered = self.render(pages)
         with destination.open("w", encoding="utf-8") as handle:
             handle.write(rendered)
+    def export(self, pages: Sequence[PageContent], destination: Path) -> None:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with destination.open("w", encoding="utf-8") as handle:
+            for page in pages:
+                handle.write(f"# {page.title}\n")
+                handle.write(f"URL: {page.url}\n")
+                handle.write(f"Fetched via: {page.fetch_strategy}\n\n")
+                handle.write(page.text)
+                handle.write("\n\n" + "=" * 80 + "\n\n")
 
 
 class PDFExporter:

@@ -37,35 +37,6 @@ python -m website_scraper.cli "https://example.com" \
 - `--pause`: Pause zwischen HTTP-Anfragen, um Server zu schonen.
 - `--verbose`: Aktiviert detailliertes Logging.
 
-## Weboberfläche & Docker
-
-Die Anwendung lässt sich vollständig containerisiert betreiben. Dabei exponiert der Backend-Container den FastAPI-Dienst auf Port **8006**, während die Vite-basierte React-Oberfläche auf Port **3006** läuft.
-
-```bash
-docker compose build
-docker compose up
-```
-
-Anschließend ist die UI unter [http://localhost:3006](http://localhost:3006) erreichbar. Der Browser spricht das Backend automatisch über `http://localhost:8006/api/scrape` an.
-
-### Manuelles Starten ohne Docker
-
-Backend-API (FastAPI):
-
-```bash
-uvicorn website_scraper.api:app --host 0.0.0.0 --port 8006
-```
-
-Frontend (Vite Development Server):
-
-```bash
-cd frontend
-npm install
-npm run dev -- --host 0.0.0.0 --port 3006
-```
-
-Die UI liest optional die Umgebungsvariable `VITE_API_BASE_URL`. Ohne Konfiguration wird automatisch die Domain des Browsers verwendet und Port 8006 angefügt.
-
 ## Hinweise
 
 - Der Scraper respektiert ausschließlich die Domain-Beschränkung und wertet keine `robots.txt` aus.
